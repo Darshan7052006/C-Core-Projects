@@ -2,39 +2,44 @@
 #include <string.h>
 #include <stdlib.h>
 
-typedef struct{
-int Roll_Number;
-char Name[50];
-float cgpa;
-char course[50];
-int phonenumber;
- }student;
+typedef struct
+{
+    int Roll_Number;
+    char Name[50];
+    float cgpa;
+    char course[50];
+    int phonenumber;
+} student;
 
 int studentexists(int id);
 void sortStudentsFile();
 
 void clearinputbuffer()
 {
-    while(getchar() != '\n');
+    while (getchar() != '\n')
+        ;
 }
 
- void Add_student(){
+void Add_student()
+{
     FILE *fp;
     student s;
     printf("Enter the Roll Number of the Student: ");
     scanf("%d", &s.Roll_Number);
     clearinputbuffer();
     // check if any duplicate id exists because we cannot allow multiple students with the same roll number.
-    if(studentexists(s.Roll_Number)){
+    if (studentexists(s.Roll_Number))
+    {
         printf("\nThere is already a Student registerred with the Roll Number the User has given.\n");
         return;
     }
-    else{
+    else
+    {
         printf("Enter the name of the Student: ");
-        fgets(s.Name, sizeof(s.Name), stdin);// This fgets function is used to get input from the user and it is used to take input in form of strings.
+        fgets(s.Name, sizeof(s.Name), stdin); // This fgets function is used to get input from the user and it is used to take input in form of strings.
         // For the function to work we have to provide the place where we have to input and the size of string and the place from where input is taken.
         // Here stdin means taken from keyboard.
-        s.Name[strcspn(s.Name, "\n")]= '\0' ; // Here i have used the string complement span function.
+        s.Name[strcspn(s.Name, "\n")] = '\0'; // Here i have used the string complement span function.
         // It detects the new line added by the fgets function and then replaces it with a null character thus the new line is removed.
 
         printf("Enter the Cgpa of the Student: ");
@@ -50,49 +55,53 @@ void clearinputbuffer()
         s.course[strcspn(s.course, "\n")] = '\0';
 
         fp = fopen("D:/Data.txt", "ab");
-        if(fp == NULL){
+        if (fp == NULL)
+        {
             printf("The system was not able to open the file.\n");
             return;
         }
-         fwrite(&s, sizeof(s), 1, fp);
+        fwrite(&s, sizeof(s), 1, fp);
 
-    fclose(fp);
+        fclose(fp);
 
-    printf("\nStudent added successfully.\n");
+        printf("\nStudent added successfully.\n");
 
-    // This function is used to sort files and record of the students.
-    sortStudentsFile();
+        // This function is used to sort files and record of the students.
+        sortStudentsFile();
     }
 }
- 
+
 /*
 The below function is used to display records of the students which are stored in the binary file that the user entered.
 */
-void displayrecord(){
+void displayrecord()
+{
     FILE *fp;
     student s;
-    int count=0;
-     fp = fopen("D:/Data.txt", "rb");
-        if(fp == NULL){
-            printf("No records found.\n");
-            return;
-        }  
-        printf("\n--------STUDENT RECORDS--------");
-        while(fread(&s, sizeof(student), 1,fp) == 1){
-            printf("Record = %d\n", ++count);
-            printf("Roll Number = %d\n", s.Roll_Number);
-            printf("Name = %s\n", s.Name);
-            printf("Course = %s\n", s.course);
-            printf("Phone number = %d\n", s.phonenumber);
-            printf("Cgpa = %.2f\n", s.cgpa);
-            printf("-----------------------------\n");
+    int count = 0;
+    fp = fopen("D:/Data.txt", "rb");
+    if (fp == NULL)
+    {
+        printf("No records found.\n");
+        return;
+    }
+    printf("\n--------STUDENT RECORDS--------");
+    while (fread(&s, sizeof(student), 1, fp) == 1)
+    {
+        printf("Record = %d\n", ++count);
+        printf("Roll Number = %d\n", s.Roll_Number);
+        printf("Name = %s\n", s.Name);
+        printf("Course = %s\n", s.course);
+        printf("Phone number = %d\n", s.phonenumber);
+        printf("Cgpa = %.2f\n", s.cgpa);
+        printf("-----------------------------\n");
     }
 
-    if(count == 0)
+    if (count == 0)
     {
         printf("No records available.\n");
     }
-     fclose(fp);    
+    fclose(fp);
 }
 
 /*
@@ -117,15 +126,15 @@ void searchByID()
 
     fp = fopen("D:/Data.txt", "rb");
 
-    if(fp == NULL)
+    if (fp == NULL)
     {
         printf("No records found.\n");
         return;
     }
 
-    while(fread(&s, sizeof(student), 1, fp) == 1)
+    while (fread(&s, sizeof(student), 1, fp) == 1)
     {
-        if(s.Roll_Number == id)
+        if (s.Roll_Number == id)
         {
             printf("\nStudent Found:\n");
             printf("Roll Number = %d\n", s.Roll_Number);
@@ -134,11 +143,11 @@ void searchByID()
             printf("Phone number = %d\n", s.phonenumber);
             printf("Cgpa = %.2f\n", s.cgpa);
             found = 1;
-            break; 
+            break;
         }
     }
 
-    if(!found)
+    if (!found)
     {
         printf("\nStudent with Roll Number %d not found.\n", id);
     }
@@ -156,23 +165,24 @@ void sortStudentsFile()
 
     fp = fopen("D:/Data.txt", "rb");
 
-    if(fp == NULL)
-     {   printf("The system was not able to open the file.\n");
+    if (fp == NULL)
+    {
+        printf("The system was not able to open the file.\n");
         return;
-     }
+    }
     /* count records */
-    while(fread(&temp, sizeof(student), 1, fp) == 1)
+    while (fread(&temp, sizeof(student), 1, fp) == 1)
     {
         n++;
     }
 
-    if(n == 0)
+    if (n == 0)
     {
         fclose(fp);
         return;
     }
 
-    arr = (student*)malloc(n * sizeof(student));
+    arr = (student *)malloc(n * sizeof(student));
 
     rewind(fp);
 
@@ -182,11 +192,11 @@ void sortStudentsFile()
     fclose(fp);
 
     /*bubble sort*/
-    for(i = 0; i < n - 1; i++)
+    for (i = 0; i < n - 1; i++)
     {
-        for(j = 0; j < n - i - 1; j++)
+        for (j = 0; j < n - i - 1; j++)
         {
-            if(arr[j].Roll_Number > arr[j + 1].Roll_Number)
+            if (arr[j].Roll_Number > arr[j + 1].Roll_Number)
             {
                 temp = arr[j];
                 arr[j] = arr[j + 1];
@@ -198,10 +208,11 @@ void sortStudentsFile()
     /* rewrite file */
     fp = fopen("D:/Data.txt", "wb");
 
-    if(fp == NULL)
-     {   printf("The system was not able to open the file.\n");
+    if (fp == NULL)
+    {
+        printf("The system was not able to open the file.\n");
         return;
-     }
+    }
     fwrite(arr, sizeof(student), n, fp);
 
     fclose(fp);
@@ -209,113 +220,118 @@ void sortStudentsFile()
     free(arr);
 }
 
-void update_student(){
-   FILE *fp;
-   student s;
-   char choice;
-   int option;
-   int id;
-   int found = 0;
-   printf("Enter the Roll Number of the student for whom you have to update the record: ");
-   scanf("%d", &id);
-   clearinputbuffer();
+void update_student()
+{
+    FILE *fp;
+    student s;
+    char choice;
+    int option;
+    int id;
+    int found = 0;
+    printf("Enter the Roll Number of the student for whom you have to update the record: ");
+    scanf("%d", &id);
+    clearinputbuffer();
 
-   fp = fopen("D:/Data.txt", "rb+");
-    if(fp == NULL)
-        {
+    fp = fopen("D:/Data.txt", "rb+");
+    if (fp == NULL)
+    {
         printf("The system was not able to open the file.\n");
         return;
     }
 
-   while(fread(&s, sizeof(student),1,fp) == 1){
-    if(s.Roll_Number == id){
-        found = 1;
-        fseek(fp, -sizeof(student), SEEK_CUR);
-        printf("Current Record:\n");
-        printf("Roll: %d\n", s.Roll_Number);
-        printf("Name: %s\n", s.Name);
-        printf("CGPA: %.2f\n", s.cgpa);
-        printf("Course: %s\n", s.course);
-        
-        printf("Enter the field you want to update: ");
-        printf("1) Roll Number\n 2) Name\n 3) Course\n 4) Cgpa\n 5) Phone Number\n");
-        scanf("%d", &option);
-        clearinputbuffer();
-        
-        switch(option){
-        case 1:
-{
-    int new_roll;
-
-    while(1)
+    while (fread(&s, sizeof(student), 1, fp) == 1)
     {
-        printf("Enter new Roll Number: ");
-        scanf("%d", &new_roll);
-        clearinputbuffer();
-
-        if(new_roll == s.Roll_Number)
+        if (s.Roll_Number == id)
         {
-            printf("Same as old Roll Number. No change.\n");
+            found = 1;
+            fseek(fp, -sizeof(student), SEEK_CUR);
+            printf("Current Record:\n");
+            printf("Roll: %d\n", s.Roll_Number);
+            printf("Name: %s\n", s.Name);
+            printf("CGPA: %.2f\n", s.cgpa);
+            printf("Course: %s\n", s.course);
+
+            printf("Enter the field you want to update: ");
+            printf("1) Roll Number\n 2) Name\n 3) Course\n 4) Cgpa\n 5) Phone Number\n");
+            scanf("%d", &option);
+            clearinputbuffer();
+
+            switch (option)
+            {
+            case 1:
+            {
+                int new_roll;
+
+                while (1)
+                {
+                    printf("Enter new Roll Number: ");
+                    scanf("%d", &new_roll);
+                    clearinputbuffer();
+
+                    if (new_roll == s.Roll_Number)
+                    {
+                        printf("Same as old Roll Number. No change.\n");
+                        break;
+                    }
+
+                    else if (studentexists(new_roll))
+                    {
+                        printf("Roll Number already exists. Try again.\n");
+                    }
+                    else
+                    {
+                        s.Roll_Number = new_roll;
+                        break;
+                    }
+                }
+            }
+            break;
+
+            case 2:
+                printf("Enter Updated Name: ");
+                fgets(s.Name, sizeof(s.Name), stdin);
+                s.Name[strcspn(s.Name, "\n")] = '\0';
+                break;
+
+            case 3:
+                printf("Enter Updated Course: ");
+                fgets(s.course, sizeof(s.course), stdin);
+                s.course[strcspn(s.course, "\n")] = '\0';
+                break;
+
+            case 4:
+                printf("Enter the Updated Cgpa of the Student: ");
+                scanf("%f", &s.cgpa);
+                clearinputbuffer();
+                break;
+
+            case 5:
+                printf("Enter the Updated Phone Number: ");
+                scanf("%d", &s.phonenumber);
+                clearinputbuffer();
+                break;
+
+            default:
+                printf("Invalid option\n");
+            }
+            fwrite(&s, sizeof(student), 1, fp);
+            printf("Record updated successfully.\n");
             break;
         }
-
-        else if(studentexists(new_roll))
-        {
-            printf("Roll Number already exists. Try again.\n");
-        }
-        else
-        {
-            s.Roll_Number = new_roll;
-            break;
-        }
     }
-}
-        break;
-
-        case 2:
-        printf("Enter Updated Name: ");
-        fgets(s.Name, sizeof(s.Name), stdin);
-        s.Name[strcspn(s.Name, "\n")] = '\0';
-        break;
-
-        case 3:
-        printf("Enter Updated Course: ");
-        fgets(s.course, sizeof(s.course), stdin);
-        s.course[strcspn(s.course, "\n")] = '\0';
-        break;
-
-        case 4: 
-        printf("Enter the Updated Cgpa of the Student: ");
-        scanf("%f", &s.cgpa);
-        clearinputbuffer();
-        break;
-
-        case 5:
-        printf("Enter the Updated Phone Number: ");
-        scanf("%d", &s.phonenumber);
-        clearinputbuffer();
-        break;
-
-        default : 
-        printf("Invalid option\n");
-        }
-        fwrite(&s, sizeof(student), 1, fp);
-        printf("Record updated successfully.\n");
-        break;
-    }
-    }
-    if(!found){
+    if (!found)
+    {
         printf("Record not found\n");
         printf("Do you want to add the student: ");
         scanf(" %c", &choice);
-        if(choice == 'y' || choice == 'Y'){
+        if (choice == 'y' || choice == 'Y')
+        {
             Add_student();
         }
     }
     sortStudentsFile();
     fclose(fp);
 }
-
 
 int main()
 {
