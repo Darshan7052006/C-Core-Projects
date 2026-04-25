@@ -11,13 +11,125 @@ typedef struct
     int phonenumber;
 } student;
 
-int studentexists(int id);
+void display_menu()
+{
+    printf("\n=========STUDENT RECORD MANAGEMENT SYSTEM=========\n");
+    printf("1. Add Student\n");
+    printf("2. Display\n");
+    printf("3. Search\n");
+    printf("4. Update\n");
+    printf("5. Delete\n");
+    printf("6. Exit\n");
+}
+
+int studentexists(int id)
+{
+    FILE *fp;
+    fp = fopen("D:/Data.txt","rb");
+    if (fp == NULL)
+    {
+        return 0;
+    }
+    student temp;
+    while (fread(&temp, sizeof(student), 1, fp) == 1)
+    {
+        if (temp.Roll_Number == id)
+        {
+            fclose(fp);
+            return 1;
+        }
+    }
+    fclose(fp);
+    return 0;
+}
 void sortStudentsFile();
 
 void clearinputbuffer()
 {
     while (getchar() != '\n')
         ;
+}
+
+void delete_record()
+{
+    FILE *fp;
+    FILE *fp1;
+    FILE *fp2;
+    int found = 0;
+    fp = fopen("D:/Data.txt", "rb");
+    if (fp == NULL)
+    {
+        printf("Unable to open the file.\n");
+        return;
+    }
+    fp1 = fopen("D:/temp.txt", "wb");
+    if (fp1 == NULL)
+    {
+        printf("Unable to open the file.\n");
+        fclose(fp);
+        return;
+    }
+    fp2 = fopen("D:/bin.txt", "ab");
+    if (fp2 == NULL)
+    {
+        printf("Unable to open the file.\n");
+        fclose(fp);
+        fclose(fp1);
+        return;
+    }
+    student temp;
+    int id;
+    printf("Enter the Roll Number which you have to delete: ");
+    scanf("%d", &id);
+    clearinputbuffer();
+    char choice;
+
+    printf("Are you sure you want to delete? (y/n): ");
+    scanf(" %c", &choice);
+
+    if (choice != 'y' && choice != 'Y')
+    {
+        fclose(fp);
+        fclose(fp1);
+        fclose(fp2);
+        return;
+    }
+    else
+    {
+        while (fread(&temp, sizeof(student), 1, fp) == 1)
+        {
+            if (temp.Roll_Number == id)
+            {
+                found = 1;
+                fwrite(&temp, sizeof(student), 1, fp2);
+            }
+            else
+            {
+                fwrite(&temp, sizeof(student), 1, fp1);
+            }
+        }
+
+        fclose(fp);
+        fclose(fp1);
+        fclose(fp2);
+        if (!found)
+        {
+            printf("Record not found.\n");
+            remove("D:/temp.txt");
+            return;
+        }
+        else
+        {
+            remove("D:/Data.txt");
+            if (rename("D:/temp.txt", "D:/Data.txt") != 0)
+            {
+                printf("Error replacing file.\n");
+                return;
+            }
+            printf("Record deleted successfully.\n");
+            sortStudentsFile();
+        }
+    }
 }
 
 void Add_student()
@@ -85,7 +197,7 @@ void displayrecord()
         printf("No records found.\n");
         return;
     }
-    printf("\n--------STUDENT RECORDS--------");
+    printf("\n--------STUDENT RECORDS--------\n");
     while (fread(&s, sizeof(student), 1, fp) == 1)
     {
         printf("Record = %d\n", ++count);
@@ -251,7 +363,7 @@ void update_student()
             printf("CGPA: %.2f\n", s.cgpa);
             printf("Course: %s\n", s.course);
 
-            printf("Enter the field you want to update: ");
+            printf("Enter the field you want to update: \n");
             printf("1) Roll Number\n 2) Name\n 3) Course\n 4) Cgpa\n 5) Phone Number\n");
             scanf("%d", &option);
             clearinputbuffer();
@@ -335,6 +447,45 @@ void update_student()
 
 int main()
 {
+    int choice;
 
+    while (1)
+    {
+        display_menu();
+
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        clearinputbuffer();
+
+        switch (choice)
+        {
+        case 1:
+            Add_student();
+            break;
+
+        case 2:
+            displayrecord();
+            break;
+
+        case 3:
+            searchByID();
+            break;
+
+        case 4:
+            update_student();
+            break;
+
+        case 5:
+            delete_record(); // next function
+            break;
+
+        case 6:
+            printf("Exiting...\n");
+            exit(0);
+
+        default:
+            printf("Invalid choice. Try again.\n");
+        }
+    }
     return 0;
 }
